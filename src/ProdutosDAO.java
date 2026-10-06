@@ -95,4 +95,77 @@ public class ProdutosDAO {
         return listagem;
     }
     
+    // Atualiza o status de um produto para "Vendido". Retorna true se atualizou.
+    public boolean venderProduto(int id){
+        
+        conn = new conectaDAO().connectDB();
+        
+        if (conn == null) {
+            return false;
+        }
+        
+        String sql = "UPDATE produtos SET status = ? WHERE id = ?";
+        
+        try {
+            prep = conn.prepareStatement(sql);
+            prep.setString(1, "Vendido");
+            prep.setInt(2, id);
+            int linhas = prep.executeUpdate();
+            return linhas > 0;
+        } catch (SQLException erro) {
+            System.out.println("Erro ao vender produto: " + erro.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao vender produto: " + erro.getMessage());
+            return false;
+        } finally {
+            try {
+                if (prep != null) prep.close();
+                conn.close();
+            } catch (SQLException ex) {
+                System.out.println("Erro ao fechar conexão: " + ex.getMessage());
+            }
+        }
+    }
+    
+    // Busca todos os produtos com status "Vendido".
+    public ArrayList<ProdutosDTO> listarProdutosVendidos(){
+        
+        ArrayList<ProdutosDTO> vendidos = new ArrayList<>();
+        
+        conn = new conectaDAO().connectDB();
+        
+        if (conn == null) {
+            return vendidos;
+        }
+        
+        String sql = "SELECT * FROM produtos WHERE status = ?";
+        
+        try {
+            prep = conn.prepareStatement(sql);
+            prep.setString(1, "Vendido");
+            resultset = prep.executeQuery();
+            
+            while (resultset.next()) {
+                ProdutosDTO produto = new ProdutosDTO();
+                produto.setId(resultset.getInt("id"));
+                produto.setNome(resultset.getString("nome"));
+                produto.setValor(resultset.getInt("valor"));
+                produto.setStatus(resultset.getString("status"));
+                vendidos.add(produto);
+            }
+        } catch (SQLException erro) {
+            System.out.println("Erro ao listar vendidos: " + erro.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao listar vendidos: " + erro.getMessage());
+        } finally {
+            try {
+                if (resultset != null) resultset.close();
+                if (prep != null) prep.close();
+                conn.close();
+            } catch (SQLException ex) {
+                System.out.println("Erro ao fechar conexão: " + ex.getMessage());
+            }
+        }
+        
+        return vendidos;
+    }
+    
 }
