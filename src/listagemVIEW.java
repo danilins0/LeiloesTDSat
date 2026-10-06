@@ -136,17 +136,36 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
+        String id = id_produto_venda.getText().trim();
+        
+        if (id.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Informe o ID do produto que deseja vender.");
+            return;
+        }
+        
+        int idProduto;
+        try {
+            idProduto = Integer.parseInt(id);
+        } catch (NumberFormatException erro) {
+            javax.swing.JOptionPane.showMessageDialog(this, "O ID deve ser um número inteiro.");
+            return;
+        }
         
         ProdutosDAO produtosdao = new ProdutosDAO();
         
-        //produtosdao.venderProduto(Integer.parseInt(id));
+        if (produtosdao.venderProduto(idProduto)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Produto vendido com sucesso!");
+            id_produto_venda.setText("");
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Não foi possível vender. Verifique se o ID existe.");
+        }
+        
         listarProdutos();
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-        //vendasVIEW vendas = new vendasVIEW(); 
-        //vendas.setVisible(true);
+        vendasVIEW vendas = new vendasVIEW(); 
+        vendas.setVisible(true);
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
